@@ -1,5 +1,6 @@
 :root {
 	--animation-duration: .3s;
+	--color-grey: #777;
 }
 
 *, *::before, *::after {
@@ -36,11 +37,18 @@ input, button, textarea, select {
 	font: inherit;
 	color: inherit;
 }
+button:focus {
+	outline: 2px solid cornflowerblue;
+	outline-offset: 2px;
+}
 input:focus {
 	outline-color: cornflowerblue;
 }
 p, h1, h2, h3, h4, h5, h6 {
 	overflow-wrap: break-word;
+}
+::selection {
+	background-color: cornflowerblue;
 }
 .container {
 	max-width: 420px;
@@ -103,16 +111,17 @@ p, h1, h2, h3, h4, h5, h6 {
 	height: 40px;
 	background-color: transparent;
 	border: 0;
-	border-bottom: 1px solid #777;
+	border-bottom: 1px solid var(--color-grey);
 	padding-left: 5px;
 }
 .timer__input--task::placeholder {
 	font-family: inherit;
-	color: #777;
+	color: var(--color-grey);
 }
 .timer__tasks {
 	margin-top: 10px;
 	list-style-type: none;
+	transition: all var(--animation-duration);
 }
 .timer__colomn {
 	font-size: 100px;
@@ -142,7 +151,7 @@ p, h1, h2, h3, h4, h5, h6 {
 	height: 24px;
 }
 .timer__task-mark svg {
-	fill: #000;
+	fill: var(--color-grey);
 	display: inline-block;
 	background-color: transparent;
 }
@@ -177,11 +186,12 @@ p, h1, h2, h3, h4, h5, h6 {
 	margin-top: auto;
 	width: 40px;
 	height: 40px;
-	border: 4px solid #777;
+	border: 4px solid var(--color-grey);
 	border-radius: 50%;
 	transition: all var(--animation-duration);
 	overflow: hidden;
 	position: relative;
+	cursor: pointer;
 }
 .timer__play-btn:active {
 	transform: translateY(3px);
@@ -190,7 +200,7 @@ p, h1, h2, h3, h4, h5, h6 {
 	width: 18px;
 	height: 18px;
 	border: 10px solid transparent;
-	border-left: 13px solid #777;
+	border-left: 13px solid var(--color-grey);
 	position: absolute;
 	top: 50%;
 	left: 70%;
@@ -220,8 +230,18 @@ p, h1, h2, h3, h4, h5, h6 {
 	position: unset;
 	width: 4px;
 	height: 60%;
-	background-color: #777;
+	background-color: var(--color-grey);
 	border: none;
+}
+.timer__sort-btn {
+	margin-right: auto;
+	margin-left: 15px;
+	background-color: transparent;
+	border: none;
+	fill: var(--color-grey);
+	cursor: pointer;
+	transition: all .2s;
+	animation: fade var(--animation-duration) linear;
 }
 .timer__settings {
 	margin-right: 46px;
@@ -233,7 +253,7 @@ p, h1, h2, h3, h4, h5, h6 {
 	background-color: transparent;
 	width: 40px;
 	border: none;
-	border-bottom: 1px solid #777;
+	border-bottom: 1px solid var(--color-grey);
 	text-align: center;
 	caret-color: transparent;
 }

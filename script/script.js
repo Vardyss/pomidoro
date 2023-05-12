@@ -11,9 +11,11 @@ const form = document.querySelector('.timer__form');
 const formInput = document.querySelector('.timer__input--task');
 const taskList = document.querySelector('.timer__tasks');
 
-const playBtn = document.querySelector('.timer__play-btn')
+const playBtn = document.querySelector('.timer__play-btn');
+const sortBtn = document.querySelector('.timer__sort-btn');
 
 const currentTasks = [];
+const doneTasks = [];
 
 let workTime = +localStorage.setWorkTime || 30;
 let brakeTime = +localStorage.setBrakeTime || 5;
@@ -28,7 +30,10 @@ let currentSeconds = 15;
 if (localStorage.currentTasks) {
     const localStorageItems = localStorage.getItem('currentTasks').replaceAll("\n", "").replaceAll(" ", "");
     const localStorageItemsArray = localStorageItems.split(",");
-    localStorageItemsArray.forEach(item => renderTask(item));
+    localStorageItemsArray.forEach(item => {
+        renderTask(item)
+        currentTasks.push(item);
+    });
 }
 
 // Set propriate time for client
@@ -44,9 +49,9 @@ function setMinEl(time) {
 }
 
 // render items
-function renderTask(data) {
+function renderTask(data, state="new") {
     taskList.insertAdjacentHTML('beforeend', `
-    <li class="timer__task">
+    <li class="timer__task${state === "done" ? ' done' : ''}" tabindex="0">
     <div class="timer__task-mark">
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm4.393 7.5l-5.643 5.784-2.644-2.506-1.856 1.858 4.5 4.364 7.5-7.643-1.857-1.857z"/></svg>
     </div>
@@ -104,7 +109,7 @@ playBtn.addEventListener('click', (e) => {
 
     playBtn.classList.toggle('state--active');
     playBtn.classList.toggle('state--pause');
-
+    playBtn.blur();
 })
 
 // Add task
@@ -119,9 +124,9 @@ form.addEventListener('submit', (e) => {
         formInput.value = '';
     }
 
-    const tasks12 = document.querySelectorAll('.timer__task:not(.done):not(.deleted)');
+    const allTasks = document.querySelectorAll('.timer__task:not(.done):not(.deleted)');
     currentTasks.splice(0, currentTasks.length);
-    tasks12.forEach(item => currentTasks.push(item.textContent));
+    allTasks.forEach(item => currentTasks.push(item.textContent));
     localStorage.removeItem('currentTasks');
     localStorage.setItem('currentTasks', currentTasks);
 })
@@ -129,9 +134,14 @@ form.addEventListener('submit', (e) => {
 // Task items manipulation based on click
 taskList.addEventListener('click', (e) => {
     // Toggle class "done" to list item
-    console.log(e.target);
     if (e.target.closest('.timer__task-mark') || e.target.closest('.timer__task-text')) {
         e.target.closest('.timer__task').classList.toggle('done');
+
+        if(e.target.closest('.timer__task').classList.contains('done')) doneTasks.push(e.target.textContent);
+        if(!e.target.closest('.timer__task').classList.contains('done')) {
+            const index = doneTasks.findIndex(n => n === e.target.textContent);
+            doneTasks.splice(index, 1);
+        }
     }
     // Delete item from list 
     if (e.target.closest('.timer__task-options.close')) {
@@ -149,12 +159,29 @@ taskList.addEventListener('click', (e) => {
         }
     }
 
-    const tasks12 = document.querySelectorAll('.timer__task:not(.done):not(.deleted)');
+    const allTasks = document.querySelectorAll('.timer__task:not(.done):not(.deleted)');
     currentTasks.splice(0, currentTasks.length);
-    tasks12.forEach(item => currentTasks.push(item.textContent));
+    allTasks.forEach(item => currentTasks.push(item.textContent));
     localStorage.removeItem('currentTasks');
     localStorage.setItem('currentTasks', currentTasks);
-    console.log(currentTasks);
+})
+
+// accessibility - you can get task done with keyboard only
+document.addEventListener("keyup", e => {
+    if(e.key === "Enter" && e.target.classList.contains("timer__task")) e.target.classList.toggle('done');
+})
+
+sortBtn.addEventListener('click', () => {
+    taskList.style.opacity = 0;
+    setTimeout(() => {
+        // document.querySelectorAll('.timer__task').forEach(item => item.style.display = "none");
+        taskList.innerHTML = "";
+        console.log(currentTasks);
+        currentTasks.forEach(item => renderTask(item));
+        doneTasks.forEach(item => renderTask(item, "done"));
+        taskList.style.opacity = 1;
+    }, 500);
+
 
 })
 
