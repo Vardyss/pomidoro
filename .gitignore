@@ -1,3 +1,4 @@
+.gitignore
 package.json
 browserconfig.xml
 favicon.ico
